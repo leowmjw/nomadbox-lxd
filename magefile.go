@@ -4,9 +4,11 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -15,7 +17,7 @@ import (
 
 // Default target to run when none is specified
 // If not set, running mage will list available targets
-// var Default = Build
+// var Default = Address
 
 // A build step that requires additional params, or platform specific steps for example
 func Build() error {
@@ -41,6 +43,22 @@ func InstallDeps() error {
 func Clean() {
 	fmt.Println("Cleaning...")
 	return
+}
+
+func AccessHTTP() error {
+
+	sm := http.NewServeMux()
+	sm.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		w.Write([]byte("Hello!\r\n"))
+	})
+
+	l, err := net.Listen("tcp4", ":8080")
+	if err != nil {
+		return err
+	}
+	return http.Serve(l, sm)
+
 }
 
 func AccessConsul() error {
@@ -95,7 +113,28 @@ func SetupTraefik() error {
 		return err
 	}
 	fmt.Println("IP_ADDRESS: ", ip)
+	cmd := exec.Command("wget", "-O", os.Getenv("HOME")+"/go/bin/traefik", "https://github.com/containous/traefik/releases/download/v1.6.4/traefik_linux-amd64")
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println("ERR: ", err)
+		return err
+	}
+	return nil
+}
 
+func SetupHashiUI() error {
+	// Check if Tarefik is there? be smart about it?
+	ip, err := getAddress()
+	if err != nil {
+		return err
+	}
+	fmt.Println("IP_ADDRESS: ", ip)
+	cmd := exec.Command("wget", "-O", os.Getenv("HOME")+"/go/bin/hashiui", "https://github.com/jippi/hashi-ui/releases/download/v0.25.0/hashi-ui-linux-amd64")
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println("ERR: ", err)
+		return err
+	}
 	return nil
 }
 

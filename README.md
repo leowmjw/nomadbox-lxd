@@ -4,7 +4,7 @@
 
 **Objective:** Simulate a AWS Datacenter (SG) with 3 Availability Zones (AZ) running a 3-server Nomad + Consul cluster with worker nodes.
 
-Presentation @[Geekcamp.MY 2018](https://) demo-ing nomadbox-lxd
+Presentation @[Geekcamp.MY 2018](https://docs.google.com/presentation/d/1PPYxNL4cKGbkWAcViuFZTTkne8Hx1wMQ6NmB7x1swKk) demo-ing nomadbox-lxd
 
 ## Pre-reqs
 - Vagrant

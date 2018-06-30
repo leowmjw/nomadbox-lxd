@@ -114,9 +114,9 @@ EOF
 # Run both as server ONLY; taking consul config from above ...
 ./nomad agent -server -bootstrap-expect=3 -data-dir=/tmp/nomad -config=./config.json &
 
-# Run Nomad-UI
-wget "https://github.com/jippi/hashi-ui/releases/download/v${NOMAD_BOX_VERSION_NOMAD_UI}/hashi-ui-linux-amd64"
-chmod +x ./hashi-ui-linux-amd64
+# # Run Nomad-UI
+# wget "https://github.com/jippi/hashi-ui/releases/download/v${NOMAD_BOX_VERSION_NOMAD_UI}/hashi-ui-linux-amd64"
+# chmod +x ./hashi-ui-linux-amd64
 
 # For small A0 node; pegged CPU at 100%!!  Not where you want your quorum servers to be!
 # With IP in template; can build as ./nomad-ui-linux-amd64 -web.listen-address "10.0.3.4:3000"

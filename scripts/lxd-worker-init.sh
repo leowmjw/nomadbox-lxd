@@ -26,7 +26,7 @@ NOMAD_BOX_VERSION_NOMAD=0.5.6
 
 # Get the basic packages
 export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get upgrade -y && \
-    apt-get install -y unzip docker.io docker-compose jq
+    apt-get install -y unzip jq
 # # Leave out Bedrock for now; optional SW should be parameterized; or as part of Packer/templatized
 # export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get upgrade -y && \
 #     apt-get install -y unzip dnsmasq sysstat docker.io docker-compose jq
@@ -126,13 +126,18 @@ cat > ./config.json <<EOF
     },
     "addresses": {
         "http": "${CONSUL_CLIENT_ADDRESS}"
+    },
+    "client": {
+        "options": {
+            "driver.raw_exec.enable": "1"
+        }
     }
 }
 EOF
 
 # Run both as client; taking consul config from above ...
 # TODO: Pass in tags into meta perhaps ..; for now workers tagged as "primary", can be used to constrain
-./nomad agent -node-class=primary -client -servers=10.0.1.4,10.0.2.4,10.0.3.4 -data-dir=/tmp/nomad -config=./config.json &
+./nomad agent -node-class=primary -client -servers=10.1.1.4,10.1.2.4,10.1.3.4 -data-dir=/tmp/nomad -config=./config.json &
 
 # Setup installation of th latest MSSQL 2017 for Linux .. neat!
 # SA_PASSWORD="TestAdmin123456" /opt/mssql/bin/mssql-conf setup accept-eula

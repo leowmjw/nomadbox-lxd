@@ -54,10 +54,11 @@ lxc init bionic -p default -p foundation f3 && \
 lxc init bionic -p default -p worker w1 && \
     lxc network attach fsubnet1 w1 eth0 && \
     lxc config device set w1 eth0 ipv4.address 10.1.1.100 && \
-    lxc config set w1 security.nesting=true && \
     lxc config device add w1 sharedtmp disk path=/tmp/shared source=/vagrant
 
 lxc start f1 && lxc start f2 && lxc start f3 && lxc start w1
+
+    # lxc config set w1 security.nesting=true && \
 
 # Likely should start with the exec of kickoff script .. maybe ..
 # cloud-init just to install; start/stop with setup for running consul/nomad?

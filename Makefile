@@ -84,8 +84,8 @@ setup:
 
 	echo "Downloading Traefik ${NOMAD_BOX_VERSION_TRAEFIK}"
 	cd bin && touch traefik && rm traefik* && \
-		curl -L -O "https://github.com/containous/traefik/releases/download/v${NOMAD_BOX_VERSION_TRAEFIK}/traefik_linux-arm64" && \
-		mv traefik_linux-arm64 traefik && chmod +x traefik
+		curl -L -O "https://github.com/containous/traefik/releases/download/v${NOMAD_BOX_VERSION_TRAEFIK}/traefik_linux-amd64" && \
+		mv traefik_linux-amd64 traefik && chmod +x traefik
 
 	# echo "Setup the proper modules .."
 	# cd ./terraform/${NOMAD_BOX_ENV} && time ../../bin/terraform get -update
@@ -123,19 +123,15 @@ code:
 .PHONY: start-consul
 start-consul:
 	# Start the local consul agent which local dnsmasq refer to
-	/vagrant/bin/consul agent -data-dir=/tmp/consul \ 
-		-retry-join=10.1.1.4 -retry-join=10.1.2.4 -retry-join=10.1.3.4 \ 
-		-bind=0.0.0.0 -disable-host-node-id -advertise=10.0.2.15 
+	/vagrant/bin/consul agent -data-dir=/tmp/consul -retry-join=10.1.1.4 -retry-join=10.1.2.4 -retry-join=10.1.3.4 -bind=0.0.0.0 -disable-host-node-id -advertise=10.0.2.15 
 
 .PHONY: start-hashiui
 start-hashiui:
 	# Get a local nomad binary for use to execute job; tie to magedemo?
-	/vagrant/bin/hashiui \ 
-		--consul-enable -consul-address http://consul.service.consul:8500 \
-		--nomad-enable -nomad-address http://nomad.service.consul:4646
+	/vagrant/bin/hashiui --consul-enable -consul-address http://consul.service.consul:8500 --nomad-enable -nomad-address http://nomad.service.consul:4646
 
 .PHONY: start-traefik
 start-traefik:
 	# Run traefik; assume config + binaries there ..
-	/vagrant/bin/traefik --configFile=/tmp/shared/etc/traefik.toml
+	sudo /vagrant/bin/traefik --configFile=/vagrant/etc/traefik.toml
 

@@ -42,3 +42,14 @@ make setup
 echo 'export PATH=~/go/bin:$PATH' >> ~/.bash_profile
 echo 'export PATH=/vagrant/bin:$PATH' >> ~/.bash_profile
 
+# Below anything else needing full permission
+sudo su -
+# Setup resolved in systemd to use Consul if possible ..
+cat > /etc/systemd/resolved.conf  <<EOF
+[Resolve]
+  DNS=10.1.1.1 10.1.2.1 10.1.3.1
+  FallbackDNS=1.1.1.1 8.8.8.8
+  Domains=~consul
+EOF
+
+systemctl restart systemd-resolved

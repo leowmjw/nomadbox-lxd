@@ -10,7 +10,8 @@ NOMAD_BOX_VERSION_NOMAD=0.5.6
 NOMAD_BOX_VERSION_NOMAD_UI=0.13.4
 
 # Get the basic packages
-export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get upgrade -y && \
+export DEBIAN_FRONTEND=noninteractive && apt-get update \
+    && apt-get upgrade -y && \
     apt-get install -y unzip 
     # dnsmasq sysstat docker.io
 # Should probably get jq as well :P
@@ -112,7 +113,8 @@ cat > ./config.json <<EOF
 EOF
 
 # Run both as server ONLY; taking consul config from above ...
-./nomad agent -server -bootstrap-expect=3 -data-dir=/tmp/nomad -config=./config.json &
+./nomad agent -server -bootstrap-expect=3 \ 
+    -data-dir=/tmp/nomad -config=./config.json &
 
 # # Run Nomad-UI
 # wget "https://github.com/jippi/hashi-ui/releases/download/v${NOMAD_BOX_VERSION_NOMAD_UI}/hashi-ui-linux-amd64"

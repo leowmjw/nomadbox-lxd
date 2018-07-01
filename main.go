@@ -8,11 +8,16 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/leowmjw/nomadbox-lxd/helper"
 )
 
 var runningCount int
 
 func main() {
+
+	helper.HelloWorld()
+
 	myport := os.Getenv("NOMAD_PORT_http")
 	if myport == "" {
 		myport = "8989"

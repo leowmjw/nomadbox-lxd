@@ -27,15 +27,15 @@ lxc image copy ubuntu:18.04 local: --alias=bionic
 # Use the Ubuntu nodes so can run cloud-init??
 lxc profile create foundation
 # Need to provide the cloud-init.sh scripts ..
-lxc profile set foundation user.user-data - < /code/scripts/lxd-foundation-init.sh
+lxc profile set foundation user.user-data - < /vagrant/scripts/lxd-foundation-init.sh
 
 # Use the Ubuntu nodes so can run cloud-init??
 lxc profile create worker
 # Need to provide the cloud-init.sh scripts ..
-lxc profile set worker user.user-data - < /code/scripts/lxd-worker-init.sh
+lxc profile set worker user.user-data - < /vagrant/scripts/lxd-worker-init.sh
 
 # Setup from scratch the foundation nodes ..
-# lxc delete -f f1 && lxc delete -f f2 && lxc delete -f f3   && lxc delete -f w1
+# lxc delete -f f1 && lxc delete -f f2 && lxc delete -f f3  && lxc delete -f w1
 
 # Exec in and confirm it is running
 lxc init bionic -p default -p foundation f1 && \
@@ -55,7 +55,7 @@ lxc init bionic -p default -p worker w1 && \
     lxc network attach fsubnet1 w1 eth0 && \
     lxc config device set w1 eth0 ipv4.address 10.1.1.100 && \
     lxc config set w1 security.nesting=true && \
-    lxc config device add w1 sharedtmp disk path=/tmp/shared source=/code
+    lxc config device add w1 sharedtmp disk path=/tmp/shared source=/vagrant
 
 lxc start f1 && lxc start f2 && lxc start f3 && lxc start w1
 
@@ -85,7 +85,7 @@ lxc start f1 && lxc start f2 && lxc start f3 && lxc start w1
 # lxc init bionic -p default -p worker w1 && \
 #     lxc network attach wsubnet1 w1 eth0 && \
 #     lxc config device set w1 eth0 ipv4.address 10.1.10.100 && \
-#     lxc config device add w1 sharedtmp disk path=/tmp/shared source=/code/playground-nomad
+#     lxc config device add w1 sharedtmp disk path=/tmp/shared source=/vagrant/playground-nomad
 
 # lxc init bionic -p default -p worker w2 && \
 #     lxc network attach fsubnet2 f2 eth0 && \

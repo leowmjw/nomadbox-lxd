@@ -11,6 +11,7 @@ NOMAD_BOX_VERSION_FABIO=1.5.9-go1.10.2
 NOMAD_BOX_ENV?=env-development
 NOMAD_BOX_NET?="10.0.0.0/16"
 NOMAD_BOX_VAGRANT=/Users/leow/go/src/github.com/leowmjw/nomadbox-lxd
+GOPATH=/home/vagrant/go
 
 all: build
 
@@ -25,24 +26,23 @@ vet:
 
 .PHONY: build
 build:
-	cd ${GOPATH}/github.com/leowmjw/nomadbox-lxd
 	# Compile the mydemo binary deployed with Nomad
-	go build -o ${GOPATH}/bin/mydemo
 	# Compile the magedemo binary to show higher-level binary
-	mage -compile ${GOPATH}/bin/magedemo
+	cd ${GOPATH}/src/github.com/leowmjw/nomadbox-lxd && \
+		go build -o ${GOPATH}/bin/mydemo && \
+		mage -compile ${GOPATH}/bin/magedemo
 
 .PHONY: deps
 deps:
 	# Any deps to be here
 	# Get Magefile and set it up ..
 	go get github.com/magefile/mage
-	cd ${GOPATH}/src/github.com/magefile/mage
-	go run bootstrap.go
+	cd ${GOPATH}/src/github.com/magefile/mage && go run bootstrap.go
 
 .PHONY: fix
 fix: 
 	# Fix the spike in netfilter .. make it permanent
-	sudo echo /vagrant/etc/netfilter.cfg >/etc/sysctl.d/99-netfilter.conf
+	sudo cp /vagrant/etc/netfilter.cfg /etc/sysctl.d/99-netfilter.conf
 	sudo sysctl -p
 
 .PHONY: setup

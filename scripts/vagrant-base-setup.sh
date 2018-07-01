@@ -1,8 +1,6 @@
 #!/bin/bash
 #
-# http://redsymbol.net/articles/unofficial-bash-strict-mode/
-set -euo pipefail
-IFS=$'\n\t'
+set -xe
 
 # python3-virtualenv is not available on Trusty so install it here
 sudo -E apt-get -y install python3-setuptools python3-dev python3-virtualenv
@@ -27,9 +25,10 @@ echo "cd /vagrant" >> ~/.bashrc
 mkdir -p ${HOME}/go/{src,bin}
 mkdir -p ${HOME}/go/src/github.com/leowmjw 
 
-# Below not needed anymore as current dir is mounted to /vagrant by default
-# ln -s /code ${HOME}/go/src/github.com/leowmjw/nomadbox-lxd
-# cd /code
+# Setup the needed code and bin path
+ln -s /vagrant ${HOME}/go/src/github.com/leowmjw/nomadbox-lxd
+export PATH=~/go/bin:$PATH
+
 # Fix agressive netfilter
 make fix
 # Get all binaries

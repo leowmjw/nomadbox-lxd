@@ -28,7 +28,7 @@ Vagrant.configure("2") do |config|
     vb.memory = "3068"
   end
 
-  config.vm.provision "shell", path: "scripts/ci-base-setup.sh", privileged: false
+  # config.vm.provision "shell", path: "scripts/ci-base-setup.sh", privileged: false
   config.vm.provision "shell", path: "scripts/vagrant-base-setup.sh", privileged: false
   config.vm.provision "shell", path: "scripts/lxd-base-setup.sh", privileged: false
 end

@@ -8,7 +8,8 @@ sudo -E apt-get update -q
 sudo -E apt-get purge -y lxd lxd-client 
 
 # Install the needed deps like snapd + zfsutils-linux + gcc (for dev env, cgo)
-sudo -E apt-get install -y snapd zfsutils-linux gcc g++
+# Don't forget unzip (!)
+sudo -E apt-get install -y snapd zfsutils-linux gcc g++ unzip
 
 sudo snap install lxd
 # INstall golang below so we can compile anything needed in Linux itself

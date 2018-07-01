@@ -110,6 +110,29 @@ clean:
 .PHONY: start
 start:
 	# TODO: Encapsulate below into a tmux + tmuxp sessions probably
+	# Exec in and confirm it is running
+	lxc init bionic -p default -p foundation f1 && \
+    lxc network attach fsubnet1 f1 eth0 && \
+    lxc config device set f1 eth0 ipv4.address 10.1.1.4
+
+	lxc init bionic -p default -p foundation f2 && \
+    lxc network attach fsubnet2 f2 eth0 && \
+		lxc config device set f2 eth0 ipv4.address 10.1.2.4
+
+	lxc init bionic -p default -p foundation f3 && \
+    lxc network attach fsubnet3 f3 eth0 && \
+		lxc config device set f3 eth0 ipv4.address 10.1.3.4
+
+	# NOTE: security.nesting=true is needed to run Docker inside of LXC container :P
+	lxc init bionic -p default -p worker w1 && \
+    lxc network attach fsubnet1 w1 eth0 && \
+    lxc config device set w1 eth0 ipv4.address 10.1.1.100 && \
+    lxc config device add w1 sharedtmp disk path=/tmp/shared source=/vagrant
+
+	# Had problem setting uo when not have docker there yet; deps?
+	# lxc config set w1 security.nesting=true && 
+	
+	lxc start f1 && lxc start f2 && lxc start f3 && lxc start w1
 
 .PHONY: code
 code:

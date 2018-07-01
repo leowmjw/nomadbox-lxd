@@ -58,7 +58,8 @@ lxc init bionic -p default -p worker w1 && \
 
 lxc start f1 && lxc start f2 && lxc start f3 && lxc start w1
 
-    # lxc config set w1 security.nesting=true && \
+# Had problem setting uo when not have docker there yet; deps?
+# lxc config set w1 security.nesting=true && \
 
 # Likely should start with the exec of kickoff script .. maybe ..
 # cloud-init just to install; start/stop with setup for running consul/nomad?

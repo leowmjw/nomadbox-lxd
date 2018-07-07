@@ -5,9 +5,9 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # This should be filled in by TF template using the Makefile ENV
-NOMAD_BOX_VERSION_CONSUL=0.8.4
-NOMAD_BOX_VERSION_NOMAD=0.5.6
-NOMAD_BOX_VERSION_NOMAD_UI=0.13.4
+NOMAD_BOX_VERSION_CONSUL=1.2.0
+NOMAD_BOX_VERSION_NOMAD=0.8.4
+# NOMAD_BOX_VERSION_NOMAD_UI=0.13.4
 
 # Get the basic packages
 export DEBIAN_FRONTEND=noninteractive && apt-get update \

@@ -42,7 +42,7 @@ deps:
 .PHONY: fix
 fix: 
 	# Fix the spike in netfilter .. make it permanent
-	sudo cp /vagrant/etc/netfilter.cfg /etc/sysctl.d/99-netfilter.conf
+	sudo cp /vagrant/etc/netfilter.cfg /etc/sysctl.conf
 	sudo sysctl -p
 
 .PHONY: setup
@@ -132,7 +132,7 @@ start:
 	# Had problem setting uo when not have docker there yet; deps?
 	# lxc config set w1 security.nesting=true && 
 	
-	lxc start f1 && lxc start f2 && lxc start f3 && lxc start w1
+	# lxc start f1 && lxc start f2 && lxc start f3 && lxc start w1
 
 .PHONY: code
 code:
@@ -146,15 +146,15 @@ code:
 .PHONY: start-consul
 start-consul:
 	# Start the local consul agent which local dnsmasq refer to
-	/vagrant/bin/consul agent -data-dir=/tmp/consul -retry-join=10.1.1.4 -retry-join=10.1.2.4 -retry-join=10.1.3.4 -bind=0.0.0.0 -disable-host-node-id -advertise=10.0.2.15 
+	/vagrant/bin/consul agent -data-dir=/tmp/consul -retry-join=10.1.1.4 -retry-join=10.1.2.4 -retry-join=10.1.3.4 -bind=0.0.0.0 -disable-host-node-id -advertise=10.0.2.15 &
 
 .PHONY: start-hashiui
 start-hashiui:
 	# Get a local nomad binary for use to execute job; tie to magedemo?
-	/vagrant/bin/hashiui --consul-enable -consul-address http://consul.service.consul:8500 --nomad-enable -nomad-address http://nomad.service.consul:4646
+	/vagrant/bin/hashiui --consul-enable -consul-address http://consul.service.consul:8500 --nomad-enable -nomad-address http://nomad.service.consul:4646 &
 
 .PHONY: start-traefik
 start-traefik:
 	# Run traefik; assume config + binaries there ..
-	sudo /vagrant/bin/traefik --configFile=/vagrant/etc/traefik.toml
+	sudo /vagrant/bin/traefik --configFile=/vagrant/etc/traefik.toml &
 

@@ -1,1 +1,17 @@
-# systemd service file heere..
+[Unit]
+Description=Nomad Server
+Documentation=https://nomadproject.io/docs/
+Wants=network-online.target
+After=network-online.target 
+
+[Service]
+KillMode=process
+KillSignal=SIGINT
+ExecStart=/bin/sh -c "nohup /opt/nomad/nomad agent --config=/opt/nomad/nomad.hcl  >/opt/log/nomad.log 2>&1"
+ExecReload=/bin/kill -HUP $MAINPID
+LimitNOFILE=65536
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target

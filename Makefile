@@ -7,7 +7,7 @@ NOMAD_BOX_VERSION_NOMAD=0.8.4
 NOMAD_BOX_VERSION_VAULT=0.10.3
 NOMAD_BOX_VERSION_HASHIUI=0.25.0
 NOMAD_BOX_VERSION_TRAEFIK=1.6.4
-NOMAD_BOX_VERSION_FABIO=1.5.9-go1.10.2
+NOMAD_BOX_VERSION_FABIO=1.5.9
 NOMAD_BOX_ENV?=env-development
 NOMAD_BOX_NET?="10.0.0.0/16"
 NOMAD_BOX_VAGRANT=/Users/leow/go/src/github.com/leowmjw/nomadbox-lxd
@@ -44,6 +44,7 @@ fix:
 	# Fix the spike in netfilter .. make it permanent
 	sudo cp /vagrant/etc/netfilter.cfg /etc/sysctl.conf
 	sudo sysctl -p
+	# Actual fix is to remove systemd-resolved!! and put own resolvers!
 
 .PHONY: setup
 setup:
@@ -127,6 +128,7 @@ start:
 	lxc init bionic -p default -p worker w1 && \
     lxc network attach fsubnet1 w1 eth0 && \
     lxc config device set w1 eth0 ipv4.address 10.1.1.100 && \
+    lxc config set sw1 security.nesting true && \
     lxc config device add w1 sharedtmp disk path=/tmp/shared source=/vagrant
 
 	# Had problem setting uo when not have docker there yet; deps?
@@ -143,18 +145,40 @@ code:
 	go get github.com/hashicorp/nomad
 	go get github.com/hashicorp/vault
 
+.PHONY: start-demo
+start-demo: start-consul
+	# Start sf1 + how ever many workers?
+	lxc init bionic -p default -p single-foundation sf1 && \
+    lxc network attach fsubnet1 sf1 eth0 && \
+    lxc config device set sf1 eth0 ipv4.address 10.1.1.4 && \
+    lxc config device add sf1 sharedtmp disk path=/tmp/shared source=/vagrant
+
+	lxc init bionic -p default -p single-worker sw1 && \
+    lxc network attach fsubnet1 sw1 eth0 && \
+    lxc config device set sw1 eth0 ipv4.address 10.1.1.100 && \
+    lxc config set sw1 security.nesting true && \
+    lxc config device add sw1 sharedtmp disk path=/tmp/shared source=/vagrant
+
+	lxc start sf1 && lxc start sw1
+
 .PHONY: start-consul
 start-consul:
 	# Start the local consul agent which local dnsmasq refer to
-	/vagrant/bin/consul agent -data-dir=/tmp/consul -retry-join=10.1.1.4 -retry-join=10.1.2.4 -retry-join=10.1.3.4 -bind=0.0.0.0 -disable-host-node-id -advertise=10.0.2.15 &
+	/vagrant/bin/consul agent -data-dir=/tmp/consul -retry-join=10.1.1.4 -retry-join=10.1.2.4 -retry-join=10.1.3.4 -bind=0.0.0.0 -disable-host-node-id -advertise='{{ GetInterfaceIP "eth0" }}' >log/consul.log 2>&1 &
 
 .PHONY: start-hashiui
-start-hashiui:
+start-hashiui: start-traefik start-fabio
 	# Get a local nomad binary for use to execute job; tie to magedemo?
-	/vagrant/bin/hashiui --consul-enable -consul-address http://consul.service.consul:8500 --nomad-enable -nomad-address http://nomad.service.consul:4646 &
+	/vagrant/bin/hashiui --consul-enable -consul-address http://consul.service.consul:8500 --nomad-enable -nomad-address http://nomad.service.consul:4646 >log/hashiui.log 2>&1 &
 
 .PHONY: start-traefik
 start-traefik:
 	# Run traefik; assume config + binaries there ..
-	sudo /vagrant/bin/traefik --configFile=/vagrant/etc/traefik.toml &
+	# Admin on :8081; LB on :8080
+	sudo /vagrant/bin/traefik --configFile=/vagrant/etc/traefik.toml >log/traefik.log 2>&1 &
 
+.PHONY: start-fabio
+start-fabio:
+	# Run fabio; assume config + binaries there ..
+	# Admin on :9998; LB on :9997
+	/vagrant/bin/fabio -proxy.addr :9997 >log/fabio.log 2>&1 &

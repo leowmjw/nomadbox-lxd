@@ -24,6 +24,13 @@ lxc image copy images:alpine/edge local: --alias=alpine
 # lxc image copy images:ubuntu/18.04 local: --alias=bionic
 lxc image copy ubuntu:18.04 local: --alias=bionic
 
+#### For DEMO   ##########################################################
+lxc profile create single-foundation
+lxc profile set single-foundation user.user-data - < /vagrant/scripts/lxd-single-foundation-init.sh
+lxc profile create single-worker
+lxc profile set single-worker user.user-data - < /vagrant/scripts/lxd-single-worker-init.sh
+# END For DEMO  ###########################################################
+
 # Use the Ubuntu nodes so can run cloud-init??
 lxc profile create foundation
 # Need to provide the cloud-init.sh scripts ..
@@ -54,12 +61,11 @@ lxc init bionic -p default -p foundation f3 && \
 lxc init bionic -p default -p worker w1 && \
     lxc network attach fsubnet1 w1 eth0 && \
     lxc config device set w1 eth0 ipv4.address 10.1.1.100 && \
+    lxc config set w1 security.nesting true && \
     lxc config device add w1 sharedtmp disk path=/tmp/shared source=/vagrant
 
 lxc start f1 && lxc start f2 && lxc start f3 && lxc start w1
 
-# Had problem setting uo when not have docker there yet; deps?
-# lxc config set w1 security.nesting=true && \
 
 # Likely should start with the exec of kickoff script .. maybe ..
 # cloud-init just to install; start/stop with setup for running consul/nomad?
